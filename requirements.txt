@@ -4,3 +4,4 @@ whitenoise
 googlemaps
 openmeteo-requests
 requests-cache
+pandas
