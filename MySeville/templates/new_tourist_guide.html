@@ -1,0 +1,311 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create new tourist guide</title>
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function validateForm() {
+            const interests = document.querySelectorAll('input[name="interests"]:checked');
+            if (interests.length === 0) {
+                alert("Please select at least one type of activity.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <style>
+        .three-column-layout {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
+            background-color: #eee3c9;
+          }
+          
+          .left-column,
+          .right-column {
+            width: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          
+          .left-column img,
+          .right-column img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+          
+          .center-column {
+            flex: 1;
+            max-width: 700px;
+            background-color: #fdf6e3;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          }
+          
+          /* Responsive */
+          @media (max-width: 768px) {
+            .three-column-layout {
+              flex-direction: column;
+              align-items: center;
+            }
+          
+            .left-column,
+            .right-column {
+              flex-direction: row;
+              flex-wrap: wrap;
+              justify-content: center;
+              width: 100%;
+              gap: 8px;
+            }
+          
+            .left-column img,
+            .right-column img {
+              width: 80px;
+              height: auto;
+            }
+          
+            .center-column {
+              width: 100%;
+              max-width: 100%;
+            }
+          }
+    </style>          
+
+</head>
+
+<body>
+    <header class="welcome-header">
+        <div class="welcome-text">{{ user.first_name }}'s Tourist Guides</div>
+        <img src="{% static 'res/img/logoMS.png' %}" alt="MySeville Logo" class="welcome-logo">
+    </header>
+
+    <div class="breadcrumbs">
+        <a href="{% url 'tourist_guides' %}">Tourist guides</a> &gt;
+        <span>Create new guide</span>
+    </div>
+    
+    <div class="three-column-layout" >
+        <aside>
+            <div class="column d-flex flex-column align-items-center" style="gap: 10px;">
+                <img src="{% static 'res/img/metro_madrid.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/valencia1.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/vistas_catedral.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/palomas.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/ss1.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/nazarenos.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/san_telmo.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/granada1.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+            </div>
+        </aside>
+
+        <main class="guide-form" style="flex: 1 1 55%; min-width: 300px; margin-top:0.03cm">
+            <h2>Create your new tourist guide</h2>
+            <form action="{% url 'generate_tour' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="guide-title">Guide title</label>
+                    <input type="text" id="guide-title" name="guide_title" class="form-control" placeholder="Enter a title for your guide" required>
+                </div>
+                <div class="form-group">
+                    <label for="tour-date">Tour date</label>
+                    <input type="date" id="tour-date" name="tour_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="available-time">How much time do you have for this tour?</label>
+                    <select id="available-time" name="available-time" class="form-control" placeholder="Enter available time " required>
+                        <option value="1">1 hour (between 11:00 and 21:00)</option>
+                        <option value="2">2 hours (between 11:00 and 21:00)</option>
+                        <option value="3">3 hours (between 11:00 and 21:00)</option>
+                        <option value="6">Half-day (10:00-14:00 or 16:00-20:00 aprox.)</option>
+                        <option value="12">Full-day (10:00-20:00 aprox.)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="starting-point">Where are you starting your tour?</label>
+                    <input type="text" id="starting-point" name="starting_point" class="form-control" placeholder="Enter starting location" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ending-point">Where should the tour end?</label>
+                    <input type="text" id="ending-point" name="ending_point" class="form-control" placeholder="Enter ending location" required>
+                </div>
+                <div class="form-group">
+                    <label>What type of activities are you interested in?</label>
+                    <div>
+                        <input type="checkbox" id="historical-sites" name="interests" value="historical-sites">
+                        <label class="option" for="historical-sites">Historical sites (e.g., cathedrals, monuments)</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="cultural-experiences" name="interests" value="cultural-experiences">
+                        <label class="option" for="cultural-experiences">Cultural experiences (e.g., museums)</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="gastronomy" name="interests" value="gastronomy">
+                        <label class="option" for="gastronomy">Gastronomy (e.g., tapas bars, wine tasting)</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="shopping" name="interests" value="shopping">
+                        <label class="option" for="shopping">Shopping (e.g., souvenirs, local artisan shops)</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="outdoor" name="interests" value="outdoor">
+                        <label class="option" for="outdoor">Outdoor activities (e.g. horse carriage ride, boat tour on the Guadalquivir river)</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="literary" name="interests" value="literary">
+                        <label class="option" for="literary">Literary tourism (e.g. libraries, bookstores writer's houses)</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="scientific" name="interests" value="scientific">
+                        <label class="option" for="scientific">Scientific tourism (e.g. observatories, planetariums, science museums)</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="entertainment" name="interests" value="entertainment">
+                        <label class="option" for="entertainment">Entertainment tourism (e.g. casinos, theaters, cinemas, concerts, stadiums)</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="travel_type">What type of tourist are you?</label>
+                    <select id="travel_type" name="travel_type" class="form-control" required>
+                        <option value="1">I travel for work</option>
+                        <option value="2">I travel with my partner</option>
+                        <option value="3">I travel with my family (all over 18 years old)</option>
+                        <option value="4">I travel with my family (with children under 18 years old)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tour-budget">What is your budget for this tour per person?</label>
+                    <select id="tour-budget" name="tour_budget" class="form-control" required>
+                        <option value="free">Free</option>
+                        <option value="low">Low (<10€/pers)</option>
+                        <option value="moderate">Moderate (11€-25€/pers)</option>
+                        <option value="high">High (>26€/pers)</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="hidden" id="city" name="city">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Done</button>
+                </div>                
+            </form>
+        </main>
+
+        <aside>
+            <div class="column d-flex flex-column align-items-center" style="gap: 10px;">
+                <img src="{% static 'res/img/estanque_retiro.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/barcelona1.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/vino.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/estanque.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/lasventas.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/calle_estrecha.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/tapa.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+                <img src="{% static 'res/img/playa_laconcha.png' %}" class="rounded shadow-sm" style="width: 100%; height: 150px; object-fit: cover;">
+            </div>
+        </aside>
+    </div> 
+    
+    <footer style="text-align:center; padding: 1em; background-color: #12264f; color: #c4a459;">
+        <p>© 2025 Spain in One Day. All rights reserved.</p>
+        <a href="{% url 'legal' %}" class="footer-link" style="color: #c4a459;">Legal Notice</a> |
+        <a href="{% url 'privacy' %}" class="footer-link" style="color: #c4a459;">Privacy Policy</a> |
+        <a href="{% url 'contact' %}" class="footer-link" style="color: #c4a459;">Contact</a>
+    </footer> 
+      
+   
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1FuoR7NYuLmY7T0fJrwNY6kn7nlSLlxs&libraries=places&callback=initAutocomplete" async defer></script>
+
+    <script>
+        window.onload = function() {
+            initAutocomplete(); 
+        };
+        
+        function initAutocomplete() {
+            const startingPoint = document.getElementById('starting-point');
+            const endingPoint = document.getElementById('ending-point');
+        
+            const autocompleteStart = new google.maps.places.Autocomplete(startingPoint);
+            const autocompleteEnd = new google.maps.places.Autocomplete(endingPoint);
+        
+            const options = {
+                componentRestrictions: { country: 'es' },
+            };
+            autocompleteStart.setOptions(options);
+            autocompleteEnd.setOptions(options);
+        }
+        
+        function geocodeAddress(address) {
+            console.log("Geocoding address:", address); 
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    console.log("Results:", results); 
+                    const city = results[0].address_components.filter(component => 
+                        component.types.includes("locality")
+                    )[0].long_name;
+                    console.log("City found:", city);
+                    document.getElementById('city').value = city;
+                } else {
+                    console.log("Geocoding failed: " + status);
+                }
+            });
+        }
+        
+        document.getElementById("starting-point").addEventListener("blur", function() {
+            geocodeAddress(this.value);  
+        });
+    
+    
+                document.addEventListener("DOMContentLoaded", function () {
+                const images = document.querySelectorAll(".column img");
+                const lightbox = document.createElement("div");
+                lightbox.classList.add("lightbox");
+                document.body.appendChild(lightbox);
+            
+                const imgElement = document.createElement("img");
+                lightbox.appendChild(imgElement);
+            
+                const closeButton = document.createElement("span");
+                closeButton.innerHTML = "&times;";
+                closeButton.classList.add("close-btn");
+                lightbox.appendChild(closeButton);
+            
+                images.forEach((image) => {
+                    image.addEventListener("click", function () {
+                        imgElement.src = image.src;
+                        lightbox.style.display = "flex";
+                    });
+                });
+            
+                closeButton.addEventListener("click", function () {
+                    lightbox.style.display = "none";
+                });
+            
+                lightbox.addEventListener("click", function (e) {
+                    if (e.target !== imgElement) {
+                        lightbox.style.display = "none";
+                    }
+                });
+            });
+            
+    </script>
+    
+</body>
+</html>

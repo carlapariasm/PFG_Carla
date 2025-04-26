@@ -1,0 +1,178 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome page</title>
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet"> 
+</head>
+
+<body>
+    <header class="welcome-header">
+        <div class="welcome-text">Welcome, {{ user.first_name }}!</div>
+        <img src="{% static 'res/img/logoMS.png' %}" alt="MySeville Logo" class="welcome-logo">
+    </header>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="{% url 'welcome_page' %}">Home</a></li>
+            <li><a href="{% url 'tourist_guides' %}">Tourist guides</a></li>
+            <li><a href="{% url 'FAQs' %}">FAQs</a></li>
+            <li><a href="{% url 'reviews' %}">Reviews</a></li>
+            <li><a href="{% url 'profile' %}">Profile</a></li>
+        </ul>
+
+        <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light logout-btn">Logout</button>
+        </form>
+        
+    </nav>
+
+    <main class="collage-container">
+        <div class="collage-item img1">
+            <img src="{% static 'res/img/alhambra.png' %}" alt="Seville View">
+        </div>
+        <div class="collage-item text1">
+            <h2>Discover Spain!</h2>
+            <p>Walk through old streets, see beautiful buildings, and enjoy the sunny weather. Try tasty food, watch dancing, and have fun exploring!</p>
+        </div>
+        <div class="collage-item img2">
+            <img src="{% static 'res/img/collage_2.png' %}" alt="Flamenco Performance">
+        </div>
+    
+        <div class="collage-item img3">
+            <img src="{% static 'res/img/collage_3.png' %}" alt="Seville Nightlife">
+        </div>
+        <div class="collage-item text2">
+            <h2>Plan your journey!</h2>
+            <p>Choose where to go, how long to stay, and the best way to explore. Plan your journey your way, with flexible options for every traveler. Enjoy an exciting, and relaxing trip!</p>
+        </div>
+        <div class="collage-item img4">
+            <img src="{% static 'res/img/collage_7.png' %}" alt="Feria of Seville">
+        </div>
+    
+        <div class="collage-item text3">
+            <h2>Save your guides!</h2>
+            <p>Keep track of places you love, so you can plan your trip without stress. Organize your must-visit spots and revisit them anytime. Make every trip smooth and memorable!</p>
+        </div>
+        <div class="collage-item img5">
+            <img src="{% static 'res/img/collage_5.png' %}" alt="Plaza de España">
+        </div>
+        <div class="collage-item img6">
+            <img src="{% static 'res/img/puerta_alcala.png' %}" alt="Horse Carriage in Seville">
+        </div>
+    
+        <div class="collage-item img7">
+            <img src="{% static 'res/img/sagradafamilia.png' %}" alt="Sunset Over the River">
+        </div>
+        <div class="collage-item text4">
+            <h2>Enjoy the best of Spain</h2>
+            <p>Let us guide you through the best spots of each city while you relax and enjoy. Discover famous landmarks, hidden gems, and local favorites with ease. Focus on the fun while we handle the details!</p>
+        </div>
+        <div class="collage-item img8">
+            <img src="{% static 'res/img/arcosvalencia.png' %}" alt="Local Market in Seville">
+        </div>
+    </main>
+
+    <footer style="text-align:center; padding: 1em; background-color: #12264f; color: #c4a459;">
+        <p>© 2025 Spain in One Day. All rights reserved.</p>
+        <a href="{% url 'legal' %}" class="footer-link" style="color: #c4a459;">Legal Notice</a> |
+        <a href="{% url 'privacy' %}" class="footer-link" style="color: #c4a459;">Privacy Policy</a> |
+        <a href="{% url 'contact' %}" class="footer-link" style="color: #c4a459;">Contact</a>
+    </footer>
+      
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const images = document.querySelectorAll(".collage-item img");
+            const lightbox = document.createElement("div");
+            lightbox.classList.add("lightbox");
+            document.body.appendChild(lightbox);
+        
+            const imgElement = document.createElement("img");
+            lightbox.appendChild(imgElement);
+        
+            const closeButton = document.createElement("span");
+            closeButton.innerHTML = "&times;";
+            closeButton.classList.add("close-btn");
+            lightbox.appendChild(closeButton);
+        
+            images.forEach((image) => {
+                image.addEventListener("click", function () {
+                    imgElement.src = image.src;
+                    lightbox.style.display = "flex";
+                });
+            });
+        
+            closeButton.addEventListener("click", function () {
+                lightbox.style.display = "none";
+            });
+        
+            lightbox.addEventListener("click", function (e) {
+                if (e.target !== imgElement) {
+                    lightbox.style.display = "none";
+                }
+            });
+        });
+        </script>
+
+       
+        <div id="cookie-banner" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #012951; color: #c4a459; padding: 15px; z-index: 1000; text-align: center; font-weight: bold;">
+            We use our own and third-party cookies to improve our services.
+            <button id="accept-cookies-btn" style="margin-left: 10px; padding: 5px 15px; background-color: #c4a459; border: none; color: #012951; font-weight: bold; border-radius: 4px; text-align: center;">Accept</button>
+        </div>           
+
+        <script>
+            function setCookie(name, value, days) {
+                const d = new Date();
+                d.setTime(d.getTime() + (days*24*60*60*1000));
+                const expires = "expires="+ d.toUTCString();
+                document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            }
+
+            function getCookie(name) {
+                const cname = name + "=";
+                const decodedCookie = decodeURIComponent(document.cookie);
+                const ca = decodedCookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+                }
+                return "";
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const banner = document.getElementById("cookie-banner");
+                const btn = document.getElementById("accept-cookies-btn");
+
+                if (getCookie("cookiesAccepted") !== "true") {
+                banner.style.display = "block";
+                }
+
+                btn.addEventListener("click", function () {
+                setCookie("cookiesAccepted", "true", 365);  // dura 1 año
+                banner.style.display = "none";
+                });
+            });
+        </script>
+        
+
+</body>
+</html>
+
+
+
+
+

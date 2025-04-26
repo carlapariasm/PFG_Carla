@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - MySeville</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}"/>
+  </head>
+  <body class="login-page">
+    <div class="login-overlay">
+      <div class="login-container">
+        <h2>Sign in</h2>
+
+        {% if error %}
+        <p class="error-msg">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+          {% csrf_token %}
+          <label for="username">Username:</label>
+          <input type="text" name="username" id="username" required />
+
+          <label for="password">Password:</label>
+          <input type="password" name="password" id="password" required />
+
+          <div class="login-btn-container">
+            <button type="submit" class="btn btn-login">Login</button>
+          </div>
+        </form>
+        <a href="{% url 'password_reset' %}" class="register-link">I forgot my password</a>
+        <a href="{% url 'register' %}" class="register-link">Don't have an account? Register</a>
+      </div>
+    </div>
+  </body>
+</html>

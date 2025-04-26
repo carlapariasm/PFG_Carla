@@ -1,0 +1,666 @@
+{% load static %} {% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+
+    <title>Personalized tour guide</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      
+      #tour-map {
+        height: 400px;
+        width: 100%;
+      }
+      #route-details,
+      #computed-route-details {
+        margin: 20px 0;
+      }
+      #route-details ul,
+      #computed-route-details ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      #route-details li,
+      #computed-route-details li {
+        margin-bottom: 5px;
+      }
+      .itinerary-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* espacio entre bloques */
+        justify-content: flex-start;
+        align-items: stretch;
+      }
+
+      .itinerary-step {
+        background-color: #fff;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        min-width: 250px;
+        max-width: 300px;
+        flex: 1 1 auto;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .emoji-blue {
+        -webkit-text-fill-color: #0056b3;
+        color: #0056b3;
+        font-weight: bold;
+      }
+
+        @media (max-width: 768px) {
+          .intermedio {
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center;
+            text-align: center;
+          }
+        
+          .intermedio img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 12px;
+          }
+        
+          .intermedio > div {
+            width: 100%;
+            max-width: 400px;
+          }
+      
+          .intermedio a {
+            word-break: break-word;
+          }
+        
+          .itinerary-wrapper > div {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
+        
+          .detailed-itinerary {
+            font-size: 1.3rem;
+          }
+
+          .tour-results-header {
+            margin: 0 !important;
+            padding: 0 !important;
+            position: relative;
+            background-image: url("{% static 'res/img/header_image.jpg' %}");
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            height: 160px; /* o lo que uses */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+          }
+      }
+      
+    </style>
+  </head>
+
+  <body style="margin: 0; padding: 0; background-color: #f0e9d7">
+    <header class="tour-results-header">
+      <div class="tour-results-text">Your personalized guide</div>
+      <img src="{% static 'res/img/logoMS.png' %}" alt="MySeville Logo" class="tour-results-logo"/>
+    </header>
+
+    <div class="breadcrumbs">
+      <a href="{% url 'tourist_guides' %}">Tourist guides</a> &gt;
+      <a href="{% url 'new_tourist_guide' %}">Create new guide</a> &gt;
+      <span>New guide</span>
+    </div>
+
+    
+    <!--<h2>Tour map</h2>-->
+    <div id="tour-map"></div>
+
+    <div class="itinerary-wrapper"style="display: flex; flex-direction: column; align-items: center; "
+    >
+      <div style="width: 90%; max-width: 1100px">
+        <h2 style="text-align: center; margin-bottom: 30px" class="detailed-itinerary">
+          <i class="fas fa-location-arrow" style="color: #002f5f"></i>
+          Detailed itinerary
+        </h2>
+
+        <div
+          style="
+            position: relative;
+            padding-left: 30px;
+            border-left: 4px solid #002f5f;
+            border-right: 4px solid #002f5f;
+            padding-right: 30px;
+
+          "
+        >
+          <!-- Punto de partida -->
+          <div
+            style="
+              position: relative;
+              margin-bottom: 30px;
+              margin-top: 20px;
+              line-height: 1.8;
+              background-color: #eee3c9;
+              border-radius: 6px;
+              box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            "
+          >
+            <div>
+              <div style="font-weight: bold; color:rgb(0, 0, 0)">
+                <i class="fas fa-flag-checkered" style="color: #002f5f"></i>
+                Starting point:
+              </div>
+              <div>{{ starting_point }}</div>
+            </div>
+          </div>
+
+          <!-- Trayecto inicial -->
+          {% if leg_times %}
+          <div
+            style="
+              margin-bottom: 30px;
+              margin-left: auto;
+              margin-right: auto;
+              color:rgb(8, 8, 8);
+              font-size: 15px;
+              line-height: 1.8;
+              background-color: #eee3c9;
+              border-radius: 6px;
+              width: 7cm;
+              text-align: center;
+              box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            "
+          >
+            <i class="fas fa-arrow-down" style="color: #002f5f"></i>
+            {% if transport_mode == 'walking' %}
+            <i class="fas fa-person-walking" style="color: #002f5f"></i>
+            {{ leg_times.0|floatformat:0 }} minutes walking {% else %}
+            <i class="fas fa-car" style="color: #002f5f"></i>
+            {{ leg_times.0|floatformat:0 }} minutes driving {% endif %}
+          </div>
+          {% endif %}
+
+          <!-- Paradas intermedias -->
+          {% for place in places %}
+
+            <div class="intermedio" style=" margin-bottom: 40px; display: flex; flex-direction: {% if forloop.counter0|divisibleby:2 %}row{% else %}row-reverse{% endif %}; align-items: center; gap: 20px;">
+              {% if place.image_url %}
+              <img
+                src="{{ place.image_url }}"
+                alt="Imagen de {{ place.name }}"
+                style="
+                  width: 55%;
+                  height: auto;
+                  object-fit: cover;
+                  border-radius: 12px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+                "
+              />
+            {% endif %}
+
+              <div
+                style="
+                  background-color: #eee3c9;
+                  border-radius: 12px;
+                  padding: 20px;
+                  flex: 1;
+                  line-height: 1.8; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+                "
+              >
+                <div style="font-weight: bold; margin-bottom: 10px">
+                  <i class="fas fa-map-marker-alt" style="color: #002f5f"></i> {{ place.name }}
+                </div>
+              
+                <div style="margin-bottom: 8px">
+                  <i class="fas fa-clock" style="color: #002f5f; margin-right: 8px;"></i>
+                  Visit duration: {{ place.visit_duration }} minutes
+                </div>
+              
+                <div style="margin-bottom: 8px">
+                  <i class="fas fa-euro-sign" style="color: #002f5f; margin-right: 8px;"></i>
+                  €{{ place.cost }}
+                </div>
+              
+                <div style="margin-bottom: 8px">
+                  <i class="fas fa-bullseye" style="color: #002f5f; margin-right: 8px;"></i>
+                  Type: {{ place.activity_type }}
+                </div>
+              
+                <div>
+                  <i class="fas fa-map" style="color: #002f5f; margin-right: 8px;"></i>
+                  <a href="{{ place.google_maps_url }}" target="_blank">See it on Google Maps</a>
+                </div>
+              </div>
+          
+            </div>
+
+            {% if not forloop.last %}
+            <div
+              style="
+                margin-bottom: 30px;
+                margin-left: auto;
+                margin-right: auto;
+                color:rgb(8, 8, 8);
+                font-size: 15px;
+                line-height: 1.8;
+                background-color: #eee3c9;
+                border-radius: 6px;
+                width: 7cm;
+                text-align: center; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+              "
+            >
+              <i class="fas fa-arrow-down" style="color: #002f5f"></i>
+              {% if transport_mode == 'walking' %}
+              <i class="fas fa-person-walking" style="color: #002f5f"></i>
+              {{ leg_times|index:forloop.counter|floatformat:0 }} minutes walking
+              {% else %}
+              <i class="fas fa-car" style="color: #002f5f"></i>
+              {{ leg_times|index:forloop.counter|floatformat:0 }} minutes driving
+              {% endif %}
+            </div>
+          {% endif %} {% endfor %}
+
+          <!-- Trayecto final: se muestra antes del punto final -->
+          {% if leg_times|length >= places|length %}
+            <div
+              style="
+                margin-bottom: 30px;
+                margin-left: auto;
+                margin-right: auto;
+                color:rgb(8, 8, 8);
+                font-size: 15px;
+                line-height: 1.8;
+                background-color: #eee3c9;
+                border-radius: 6px;
+                width: 7cm;
+                text-align: center;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+
+              "
+            >
+              <i class="fas fa-arrow-down" style="color: #002f5f"></i>
+              {% if transport_mode == 'walking' %}
+              <i class="fas fa-person-walking" style="color: #002f5f"></i>
+              {{ leg_times|last|floatformat:0 }} minutes walking {% else %}
+              <i class="fas fa-car" style="color: #002f5f"></i>
+              {{ leg_times|last|floatformat:0 }} minutes driving {% endif %}
+            </div>
+          {% endif %}
+
+          <!-- Punto final -->
+          <div
+            style="
+              position: relative;
+              margin-top: 20px;
+              line-height: 1.8;
+              background-color: #eee3c9;
+              border-radius: 6px;
+              box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            "
+          >
+            <div>
+              <div style="font-weight: bold">
+                <i class="fas fa-flag-checkered" style="color: #002f5f"></i>
+                Ending point:
+              </div>
+              <div>{{ ending_point }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading-overlay" style="
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(237, 218, 176, 0.8);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      font-family: Helvetica, sans-serif;
+      ">
+      <div style="text-align:center;">
+        <i class="fas fa-spinner fa-pulse" style="font-size: 48px; color: #002f5f;"></i>
+        <p style="margin-top:0.5em; font-size:1.2em; color:#002f5f;">
+          Generating your PDF guide…<br>Please, wait a moment.
+        </p>
+      </div>
+    </div>
+
+
+    <div style="text-align: center; margin: 30px">
+      <form id="download-pdf-form" method="post" action="{% url 'download_pdf_html' %}">
+        {% csrf_token %}
+        <input type="hidden" name="starting_point" value="{{ starting_point }}" />
+        <input type="hidden" name="ending_point" value="{{ ending_point }}" />
+        <input type="hidden" name="transport_mode" value="{{ transport_mode }}" />
+      
+        {% for place in places %}
+          <input
+            type="hidden"
+            name="places"
+            value="{{ place.name }}||{{ place.visit_duration }}||{{ place.cost }}||{{ place.activity_type }}||{{ place.google_maps_url }}||{{ place.image_url }}"
+          />
+        {% endfor %}
+
+      
+        {% for leg in leg_times %}
+          <input type="hidden" name="legs" value="{{ leg }}">
+        {% endfor %}
+      
+        <button class="generate-guide-button" type="submit">📄 Download PDF</button>
+      </form>
+      
+    </div>
+
+    <footer class="guide-detail-footer" >
+      <p>© 2025 Spain in One Day. All rights reserved.</p>
+      <a href="{% url 'legal' %}" class="footer-link" style="color: #c4a459">Legal Notice</a>
+      |
+      <a href="{% url 'privacy' %}" class="footer-link" style="color: #c4a459">Privacy Policy</a>
+      |
+      <a href="{% url 'contact' %}" class="footer-link" style="color: #c4a459">Contact</a>
+    </footer>
+
+    <script>
+      var placesData = [
+        {% for place in places %}
+        {
+          name: "{{ place.name }}",
+          visit_duration: "{{ place.visit_duration }}",
+          cost: "{{ place.cost }}",
+          activity_type: "{{ place.activity_type }}",
+          google_maps_url: "{{ place.google_maps_url }}"
+        },
+        {% endfor %}
+      ];
+
+      function calculateDistance(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      function orderWaypoints(start, places) {
+        let ordered = [];
+        let current = start;
+        let remaining = [...places];
+        while (remaining.length > 0) {
+          let nearestIndex = 0;
+          let nearestDistance = calculateDistance(
+            current.lat(), current.lng(),
+            remaining[0].position.lat(), remaining[0].position.lng()
+          );
+          for (let i = 1; i < remaining.length; i++) {
+            let dist = calculateDistance(
+              current.lat(), current.lng(),
+              remaining[i].position.lat(), remaining[i].position.lng()
+            );
+            if (dist < nearestDistance) {
+              nearestDistance = dist;
+              nearestIndex = i;
+            }
+          }
+          let nextPlace = remaining[nearestIndex];
+          ordered.push(nextPlace);
+          current = nextPlace.position;
+          remaining.splice(nearestIndex, 1);
+        }
+        return ordered;
+      }
+
+      // Función de geocodificación que usa un callback para continuar
+      function geocodeAddress(address, callback) {
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ 'address': address }, function(results, status) {
+          if (status === 'OK') {
+            callback(results[0].geometry.location);
+          } else {
+            console.log("Geocode error (" + address + "): " + status);
+            callback(null);
+          }
+        });
+      }
+
+      // Función para crear un marcador con su InfoWindow y una etiqueta
+      function createMarker(map, position, title, content, label) {
+        var marker = new google.maps.Marker({
+          position: position,
+          map: map,
+          title: title,
+          label: label
+        });
+        var infowindow = new google.maps.InfoWindow({
+          content: content
+        });
+        marker.addListener("click", function() {
+          infowindow.open(map, marker);
+        });
+      }
+
+      // Función principal para inicializar el mapa y crear la ruta
+      function initMap() {
+        var mapElement = document.getElementById("tour-map");
+        if (!mapElement) {
+          console.error("Error: No div with id 'tour-map' found");
+          return;
+        }
+        var map = new google.maps.Map(mapElement, {
+          zoom: 13,
+          center: { lat: 37.3886, lng: -5.9823 }
+        });
+
+        // Geocodificar el starting point y el ending point
+        geocodeAddress("{{ starting_point }}", function(startLocation) {
+          if (!startLocation) return;
+          geocodeAddress("{{ ending_point }}", function(endLocation) {
+            if (!endLocation) return;
+
+            var currentLabelCode = "A".charCodeAt(0);
+            // Marcador del punto de inicio
+            createMarker(
+              map,
+              startLocation,
+              "Starting Point",
+              "<h3>Starting Point</h3><p>{{ starting_point }}</p>",
+              String.fromCharCode(currentLabelCode)
+            );
+            currentLabelCode++;
+
+            // Extraer coordenadas de los lugares a partir de sus URLs
+            var placesArray = [];
+            placesData.forEach(function(place) {
+              var regex = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
+              var matches = place.google_maps_url.match(regex);
+              if (matches) {
+                var lat = parseFloat(matches[1]);
+                var lng = parseFloat(matches[2]);
+                placesArray.push({
+                  position: new google.maps.LatLng(lat, lng),
+                  name: place.name,
+                  visit_duration: place.visit_duration,
+                  cost: place.cost,
+                  activity_type: place.activity_type,
+                  google_maps_url: place.google_maps_url
+                });
+              } else {
+                console.log("Could not extract coordinates from URL:", place.google_maps_url);
+              }
+            });
+            console.log("Extracted places (in backend order):", placesArray);
+
+            var seen = new Set();
+            placesArray = placesArray.filter(function(p) {
+              if (seen.has(p.name)) return false;
+              seen.add(p.name);
+              return true;
+            });
+
+            console.log("Places after dedupe:", placesArray);
+
+            // Usamos exactamente el orden que vino de Django
+            var orderedPlaces = placesArray;
+            console.log("Using backend order for map:", orderedPlaces);
+
+            // Crear marcadores para cada lugar intermedio con sus etiquetas
+            orderedPlaces.forEach(function(place) {
+              var content = `<h3>${place.name}</h3>
+                             <p><strong>Duration:</strong> ${place.visit_duration} minutes</p>
+                             <p><strong>Cost:</strong> €${place.cost}</p>
+                             <p><strong>Activity Type:</strong> ${place.activity_type}</p>
+                             <p><a href="${place.google_maps_url}" target="_blank">View on Google Maps</a></p>`;
+              createMarker(
+                map,
+                place.position,
+                place.name,
+                content,
+                String.fromCharCode(currentLabelCode)
+              );
+              currentLabelCode++;
+            });
+
+            // Marcador para el punto final
+            createMarker(
+              map,
+              endLocation,
+              "Ending Point",
+              "<h3>Ending Point</h3><p>{{ ending_point }}</p>",
+              String.fromCharCode(currentLabelCode)
+            );
+
+            // Preparar waypoints para la ruta (en el orden calculado)
+            var waypoints = orderedPlaces.map(function(place) {
+              return { location: place.position, stopover: true };
+            });
+
+            // Usar DirectionsService y DirectionsRenderer (suprimir los marcadores por defecto)
+            var directionsService = new google.maps.DirectionsService();
+            var directionsRenderer = new google.maps.DirectionsRenderer({
+              suppressMarkers: true
+            });
+            directionsRenderer.setMap(map);
+
+            directionsService.route({
+              origin: startLocation,
+              destination: endLocation,
+              waypoints: waypoints,
+              travelMode: google.maps.TravelMode.WALKING
+            }, function(result, status) {
+              if (status === google.maps.DirectionsStatus.OK) {
+                directionsRenderer.setDirections(result);
+                // Extraer los tiempos de cada trayecto (cada leg) según Google
+                var legs = result.routes[0].legs;
+                var detailsHtml = "<h3>Duración entre puntos (según Google):</h3><ul>";
+                for (var i = 0; i < legs.length; i++) {
+                  var fromLabel = String.fromCharCode("A".charCodeAt(0) + i);
+                  var toLabel = String.fromCharCode("A".charCodeAt(0) + i + 1);
+                  detailsHtml += "<li>" + toLabel + ": " + legs[i].duration.text + " se tardan desde " + fromLabel + "</li>";
+                }
+                detailsHtml += "</ul>";
+                document.getElementById("route-details").innerHTML = detailsHtml;
+              } else {
+                console.log("Directions request failed due to " + status);
+              }
+            });
+          });
+        });
+      }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          const images = document.querySelectorAll(".intermedio img");
+          const lightbox = document.createElement("div");
+          lightbox.classList.add("lightbox");
+          document.body.appendChild(lightbox);
+      
+          const imgElement = document.createElement("img");
+          lightbox.appendChild(imgElement);
+      
+          const closeButton = document.createElement("span");
+          closeButton.innerHTML = "&times;";
+          closeButton.classList.add("close-btn");
+          lightbox.appendChild(closeButton);
+      
+          images.forEach((image) => {
+              image.addEventListener("click", function () {
+                  imgElement.src = image.src;
+                  lightbox.style.display = "flex";
+              });
+          });
+      
+          closeButton.addEventListener("click", function () {
+              lightbox.style.display = "none";
+          });
+      
+          lightbox.addEventListener("click", function (e) {
+              if (e.target !== imgElement) {
+                  lightbox.style.display = "none";
+              }
+          });
+      });
+
+
+      document.addEventListener('DOMContentLoaded', function(){
+        const form    = document.getElementById('download-pdf-form');
+        const overlay = document.getElementById('loading-overlay');
+      
+        form.addEventListener('submit', function(e){
+          e.preventDefault();            // no recargues
+          overlay.style.display = 'flex';
+      
+          fetch(form.action, {
+            method:  'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body:    new FormData(form)
+          })
+          .then(resp => {
+            if (!resp.ok) throw new Error('Error generando PDF');
+            return resp.blob();
+          })
+          .then(blob => {
+            // fuerza la descarga
+            const url = URL.createObjectURL(blob);
+            const a   = document.createElement('a');
+            a.href    = url;
+            a.download= 'tour_guide.pdf';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+          })
+          .catch(err => {
+            console.error(err);
+            alert('No hemos podido generar el PDF. Inténtalo de nuevo.');
+          })
+          .finally(() => {
+            overlay.style.display = 'none';
+          });
+        });
+      });
+      
+    </script>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1FuoR7NYuLmY7T0fJrwNY6kn7nlSLlxs&libraries=places&callback=initMap"
+      async
+      defer
+    ></script>
+  </body>
+</html>

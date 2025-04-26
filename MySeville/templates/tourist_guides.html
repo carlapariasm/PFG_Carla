@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Guides</title>
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+</head>
+
+<body>
+    <header class="welcome-header">
+        <div class="welcome-text">{{ user.first_name }}'s tourist guides</div>
+        <img src="{% static 'res/img/logoMS.png' %}" alt="MySeville Logo" class="welcome-logo">
+    </header>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="{% url 'welcome_page' %}">Home</a></li>
+            <li><a href="{% url 'tourist_guides' %}">Tourist guides</a></li>
+            <li><a href="{% url 'FAQs' %}">FAQs</a></li>
+            <li><a href="{% url 'reviews' %}">Reviews</a></li>
+            <li><a href="{% url 'profile' %}">Profile</a></li>
+        </ul>
+        <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light logout-btn">Logout</button>
+        </form>
+    </nav>
+
+
+    <div class="guides-wrapper">
+        <img src="{% static 'res/img/palacio_real.png' %}" alt="Seville Left" class="side-image left-image">
+    
+        <div class="page-background">
+            <main class="guides-main">
+                <section class="guides-intro">
+                    <h2>Create and manage your tourist guides</h2>
+                    <p>
+                        Here you can create customized tourist guides for your trips to any place in Spain. You can also view the guides you’ve created before.
+                        Let MySeville help you plan the perfect itinerary!
+                    </p>
+                </section>
+    
+                <section class="new-guide-section">
+                    <a href="{% url 'new_tourist_guide' %}" class="btn btn-primary new-guide-btn">+ New tourist guide</a>            
+                </section>
+    
+                <section class="existing-guides-section">
+                    <h3>{{ user.first_name }}'s previous tourist guides</h3>
+                
+                    {% if latest_guides %}
+                        <ul class="guides-list">
+                            {% for guide in latest_guides %}
+                                <li class="guides-list">
+                                    <a href="{% url 'guide_detail' guide.pk %}">
+                                        {{ guide.guide_title }} – {{ guide.tour_date }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="no-guides">Any guide created yet. Start by clicking "New tourist guide".</p>
+                    {% endif %}
+                </section>  
+                <div class="mobile-image-wrapper">
+                    <img src="{% static 'res/img/alcazar.png' %}" alt="Seville Mobile" class="side-image mobile-show-image">
+                </div>              
+                
+            </main>
+        </div>
+    
+        <img src="{% static 'res/img/alcazar.png' %}" alt="Seville Right" class="side-image right-image">
+        
+    </div>
+
+    <footer style="text-align:center; padding: 1em; background-color: #12264f; color: #c4a459;">
+        <p>© 2025 Spain in One Day. All rights reserved.</p>
+        <a href="{% url 'legal' %}" class="footer-link" style="color: #c4a459;">Legal Notice</a> |
+        <a href="{% url 'privacy' %}" class="footer-link" style="color: #c4a459;">Privacy Policy</a> |
+        <a href="{% url 'contact' %}" class="footer-link" style="color: #c4a459;">Contact</a>
+    </footer>
+    
+
+</body>
+</html>

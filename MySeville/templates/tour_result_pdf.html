@@ -1,0 +1,149 @@
+{% load static %}
+{% load static custom_filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Tour Guide PDF</title>
+    <style>
+        body {
+            font-family: Helvetica, sans-serif;
+            background-color: #ffffff;
+            color: #222;
+            margin: 2em;
+        }
+
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            color: #002f5f;
+            font-size: 24px;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .header img {
+            height: 90px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .place-card {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 8px;           /* separación pequeñita */
+            align-items: flex-start;
+            text-align: center;
+        }
+          
+        /* la foto ya no es 45% del contenedor, es “siempre” 220px */
+        .place-card img {
+            flex: 0 0 220px;    /* nunca se encoge ni crece */
+            width: 220px;
+            height: auto;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+          
+        /* opcional: solapamiento ligero */
+        .place-info {
+            background-color: #eee3c9;
+            padding: 20px;
+            border-radius: 12px;
+            flex: 1;
+            /* margin-left: -8px; descomenta si quieres que la caja “tape” un pelín la foto */
+        }
+          
+        .divider {
+            text-align: center;
+            background-color: #eee3c9;
+            padding: 10px 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            width: 9cm;
+        }
+
+        .endpoint {
+            background-color: #eee3c9;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #002f5f;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2><i class="fas fa-location-arrow" style="color: #002f5f;"></i> Detailed itinerary</h2>
+        <img src="{{ base_url }}static/res/img/logoMS.png" alt="Logo" />
+    </div>
+
+    <div class="section endpoint" style="text-align:center; width: 16cm;">
+        <strong>🚩 Starting point:</strong><br>
+        {{ starting_point }}
+    </div>
+
+    {% for place in places %}
+        {% comment %}
+        Solo imprimimos un “divider” mientras queden leg_times:
+        forloop.counter0 = índice 0,1,2… de la iteración sobre places
+        {% endcomment %}
+        {% if forloop.counter0 < leg_times|length %}
+        <div class="divider">
+            {% if transport_mode == 'walking' %}
+                🚶 Walking time to next stop:
+            {% else %}
+                🚗 Driving time to next stop:
+            {% endif %}
+                {{ leg_times|index:forloop.counter0|floatformat:0 }} mins
+        </div>
+        {% endif %}
+
+
+        <div class="place-card">
+            {% if place.image_url %}
+                <img src="{{ base_url }}{{ place.image_url }}" alt="Image of {{ place.name }}">
+            {% endif %}
+            <div class="place-info">
+                <strong>📍 {{ place.name }}</strong><br>
+                🕒 Visit duration: {{ place.visit_duration }} minutes<br>
+                💶 €{{ place.cost }}<br>
+                🎯 Type: {{ place.activity_type }}<br>
+                🌍 <a href="{{ place.google_maps_url }}">See on Google Maps</a>
+            </div>
+        </div>
+    {% endfor %}
+
+    {# Si hay un leg extra (el viaje final), lo mostramos #}
+    {% if leg_times|length > places|length %}
+    <div class="divider">
+    {% if transport_mode == 'walking' %}
+        🚶 Walking time to end:
+    {% else %}
+        🚗 Driving time to end:
+    {% endif %}
+        {{ leg_times|last|floatformat:0 }} mins
+    </div>
+    {% endif %}
+
+    <div class="section endpoint" style="text-align:center; width: 16cm;">
+        <strong>🏁 Ending point:</strong><br>
+        {{ ending_point }}
+    </div>
+
+    
+</body>
+</html>

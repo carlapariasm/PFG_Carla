@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Notice</title>
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="body-legal">
+
+    <header class="welcome-header">
+        <div class="welcome-text">Legal Notice</div>
+        <img src="{% static 'res/img/logoMS.png' %}" alt="MySeville Logo" class="welcome-logo">
+    </header>
+
+    <nav class="navbar">
+        <ul>
+          <li><a href="{% url 'welcome_page' %}">Home</a></li>
+          <li><a href="{% url 'tourist_guides' %}">Tourist guides</a></li>
+          <li><a href="{% url 'FAQs' %}">FAQs</a></li>
+          <li><a href="{% url 'reviews' %}">Reviews</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+        </ul>
+        <form method="POST" action="{% url 'logout' %}" class="logout-form">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-light logout-btn">Logout</button>
+      </form>
+    </nav>
+
+  <main class="legal-content">
+    <p class="legal-owner"><strong>Website owner:</strong> MySeville</p>
+    <p class="legal-company"><strong>Company name:</strong> MySeville S.L.</p>
+    <p class="legal-tax-id"><strong>CIF/NIF:</strong> X92441928</p>
+    <p class="legal-address"><strong>Registered address:</strong> Calle Príncipe de Vergara 79, 28006 Madrid, España</p>
+    <p class="legal-contact"><strong>Contact:</strong> mysevilleapp@gmail.com | +34 698 090 153</p>
+
+    <section class="legal-section purpose">
+      <h2 class="legal-subtitle">Purpose of the website</h2>
+      <p>This website provides information about tourism services and personalized tours in Seville. Its main goal is to assist users in discovering and booking local experiences.</p>
+    </section>
+
+    <section class="legal-section intellectual-property">
+      <h2 class="legal-subtitle">Terms of use</h2>
+      <p>By accessing and using this website, you agree to comply with the conditions set forth in this legal notice. We reserve the right to modify these terms at any time without prior notice.</p>
+    </section>
+
+    <section class="legal-section liability">
+      <h2 class="legal-subtitle">Liability</h2>
+      <p>MySeville is not responsible for any damages that may arise from the use of the information on this website or the services offered. Links to third-party sites are provided for convenience only and are beyond our control.</p>
+    </section>
+
+    <section class="legal-section governing">
+        <h2 class="legal-subtitle">Governing law</h2>
+        <p>This legal notice is governed by Spanish law. In case of dispute, the parties submit to the courts and tribunals of Seville, Spain..</p>
+    </section>
+  </main>
+
+  <footer style="text-align:center; padding: 1em; background-color: #12264f; color: #c4a459;">
+    <p>© 2025 Spain in One Day. All rights reserved.</p>
+    <a href="{% url 'legal' %}" class="footer-link" style="color: #c4a459;">Legal Notice</a> |
+    <a href="{% url 'privacy' %}" class="footer-link" style="color: #c4a459;">Privacy Policy</a> |
+    <a href="{% url 'contact' %}" class="footer-link" style="color: #c4a459;">Contact</a>
+  </footer>
+
+</body>
+</html>

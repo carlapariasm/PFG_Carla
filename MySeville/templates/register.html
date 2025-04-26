@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - MySeville</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}"/>
+  </head>
+  <body class="register-page">
+    <div class="register-overlay">
+      <div class="register-container">
+        <h2>Create an account</h2>
+        <form method="POST" action="{% url 'register' %}">
+          {% csrf_token %} {{ form.as_p }}
+          <div class="password-requirements">
+            {{ form.password1.help_text }}
+          </div>
+
+          <div class="register-btn-container">
+            <button type="submit" class="btn btn-register">Register</button>
+          </div>
+        </form>
+        <p>
+          <a href="{% url 'login' %}" class="login-link">Do you already have an account? Sign in</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

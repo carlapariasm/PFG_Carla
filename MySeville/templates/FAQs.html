@@ -1,0 +1,149 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQs</title>
+    <link rel="icon" type="image/png" href="{% static 'res/img/logoMS.png' %}"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">  
+</head>
+
+<body class="profile-page">
+    <header class="welcome-header">
+        <div class="welcome-text">Frequently Asked Questions</div>
+        <img src="{% static 'res/img/logoMS.png' %}" alt="MySeville Logo" class="welcome-logo">
+    </header>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="{% url 'welcome_page' %}">Home</a></li>
+            <li><a href="{% url 'tourist_guides' %}">Tourist guides</a></li>
+            <li><a href="{% url 'FAQs' %}">FAQs</a></li>
+            <li><a href="{% url 'reviews' %}">Reviews</a></li>
+            <li><a href="{% url 'profile' %}">Profile</a></li>
+        </ul>
+
+        <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-light logout-btn">Logout</button>
+        </form>
+    </nav>
+
+    <main class="container my-5">
+        <h2 class="mb-4 text-center got-questions">Got questions? We’ve got answers!</h2>
+
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                        How do I book a tourist guide?
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        You can book a guide by visiting the "Tourist Guides" section and clicking the "New Tourist Guide" button. Then you should complete your preferences and once completed this information, the guide will be generated when cliking the "Done" button.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                        Do I need to create an account to use MySeville?
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes, you should register and login to browse and explore our content. Don't worry because it is an easy process!
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                        Do you offer customer support?
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes, our support team is available Monday to Friday, 9:00 AM – 6:00 PM CET. You can contact it with the phone you will see in the "Contact" page or through the contact form. 
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                        Do I get notifications if the tourist guide changes for any reason?
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes, you’ll receive an immediate notification via email and on your profile if your assigned guide changes. We’ll also provide you with details about the new guide.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                        How long do tours usually last?
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        It depends on the tour. You will select the hours you are free and we will adjust the tour to that period of time.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix">
+                        In what places is MySeville available?
+                    </button>
+                </h2>
+                <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        It is now available for the main capital cities, but we are still growing and we expect to be present in more places soon!
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSeven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven">
+                        For how many days can I create the guide?
+                    </button>
+                </h2>
+                <div id="collapseSeven" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        The guide is created for one day. If your stay lasts more than one day, you will need to create a guide of each one of these days, depending on th free time you have in these days to do the tour.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+
+    <footer class="profile-footer" style="text-align:center; padding: 1em; background-color: #12264f; color: #c4a459;">
+        <p>© 2025 Spain in One Day. All rights reserved.</p>
+        <a href="{% url 'legal' %}" class="footer-link" style="color: #c4a459;">Legal Notice</a> |
+        <a href="{% url 'privacy' %}" class="footer-link" style="color: #c4a459;">Privacy Policy</a> |
+        <a href="{% url 'contact' %}" class="footer-link" style="color: #c4a459;">Contact</a>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+
+</body>
+</html>
