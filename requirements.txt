@@ -3,3 +3,4 @@ gunicorn
 whitenoise
 googlemaps
 openmeteo-requests
+requests-cache
