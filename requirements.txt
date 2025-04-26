@@ -2,3 +2,4 @@ django
 gunicorn
 whitenoise
 googlemaps
+openmeteo-requests
