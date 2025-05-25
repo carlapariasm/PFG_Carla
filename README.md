@@ -28,3 +28,5 @@ Spain in One Day is a web application designed to help tourists plan a personali
 ## Author
 
 Carla de Parías Mateos – Final Degree Project – Universidad Francisco de Vitoria (2025)
+
+<!-- update -->
